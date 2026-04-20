@@ -77,6 +77,7 @@ dump.rdb
 frontend/node_modules/
 frontend/build/
 frontend/dist/
+frontend/coverage/
 frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
@@ -84,6 +85,8 @@ frontend/.env.production.local
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
+frontend/.eslintcache
+frontend/.parcel-cache
 
 # Docker
 .dockerignore

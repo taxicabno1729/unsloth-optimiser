@@ -1,23 +1,23 @@
 # Unsloth Optimiser
 
-Web-based interface for configuring and monitoring model training optimization tasks using the Unsloth library.
-
 [![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB.svg?logo=react&logoColor=white)](https://reactjs.org/)
 [![Celery](https://img.shields.io/badge/Celery-37814A.svg?logo=celery&logoColor=white)](https://docs.celeryq.dev/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-## Overview
+Web-based interface for configuring and monitoring model training optimization tasks using the Unsloth library.
 
-Unsloth Optimiser provides a complete solution for managing AI model optimization workflows:
+## ✨ Features
 
-- **Backend**: FastAPI with SQLAlchemy, JWT authentication, and Celery task queue
-- **Frontend**: React SPA with real-time WebSocket updates
-- **Workers**: Distributed Celery workers for optimization tasks
-- **Deployment**: Docker and Kubernetes ready
-
-## Features
+### Modern UI
+- 🎨 **Dark theme** with gradient accents
+- 📊 **Dashboard** with real-time statistics
+- 🔔 **Toast notifications** for user feedback
+- 📱 **Responsive design** - works on mobile and desktop
+- 🖼️ **Card-based layout** with hover effects
+- ⚡ **Live updates** via WebSocket
 
 ### Optimization Methods
 - **Quantization** (4-bit/8-bit) - Reduce model size with minimal quality loss
@@ -34,77 +34,86 @@ Unsloth Optimiser provides a complete solution for managing AI model optimizatio
 - ✅ Docker & Kubernetes deployment configs
 - ✅ CORS and security headers
 
-## Quick Start
+## 🚀 Quick Start
 
-### Prerequisites
-- Python 3.13+
-- Node.js 18+ (for frontend)
-- Redis 7+ (for Celery)
-- PostgreSQL 15+ (optional, SQLite for dev)
+### Option 1: Docker Compose (Recommended)
 
-### Installation
+One command to start everything:
 
 ```bash
 # Clone the repository
 git clone https://github.com/taxicabno1729/unsloth-optimiser.git
 cd unsloth-optimiser
 
-# Install Python dependencies
-pip install -e ".[dev]"
-
-# Install frontend dependencies
-cd frontend
-npm install
-cd ..
-```
-
-### Running Locally
-
-```bash
-# Start Redis (required for Celery)
-redis-server
-
-# Start the backend API
-uvicorn src.api.main:app --reload --port 8000
-
-# Start Celery worker (in another terminal)
-celery -A src.api.tasks.celery worker --loglevel=info
-
-# Start the frontend (in another terminal)
-cd frontend
-npm start
-```
-
-The application will be available at:
-- **Frontend**: http://localhost:3000
-- **API**: http://localhost:8000
-- **API Docs**: http://localhost:8000/docs
-
-### Using Docker Compose
-
-```bash
-# Start all services
-docker-compose up -d
+# Start all services (frontend + backend + database + worker)
+docker-compose up --build -d
 
 # View logs
 docker-compose logs -f
 
-# Stop services
+# Stop all services
 docker-compose down
 ```
 
-## Architecture
+**Access points:**
+- 🌐 **Frontend**: http://localhost:3000
+- 🔌 **API**: http://localhost:8000
+- 📚 **API Docs**: http://localhost:8000/docs
+
+### Option 2: Local Development
+
+```bash
+# Install Python dependencies
+pip install -e ".[dev]"
+
+# Install frontend dependencies
+cd frontend && npm install && cd ..
+
+# Start Redis (required for Celery)
+redis-server
+
+# Terminal 1: Start backend API
+uvicorn src.api.main:app --reload --port 8000
+
+# Terminal 2: Start Celery worker
+celery -A src.api.tasks.celery worker --loglevel=info
+
+# Terminal 3: Start frontend
+cd frontend && npm start
+```
+
+## 📸 Screenshots
+
+**Dashboard**
+- Modern dark theme with gradient stat cards
+- Real-time task statistics
+- Quick action buttons
+
+**Task Creation**
+- Visual method selection cards
+- Advanced parameters (bits, batch size, memory)
+- Toast notifications on success/error
+
+**Task Details**
+- Live WebSocket updates panel
+- Status badges with animations
+- Copy task ID functionality
+
+## 🏗️ Architecture
 
 ```
 ┌─────────────────┐      ┌──────────────────┐      ┌─────────────────┐
 │   React SPA     │──────▶   FastAPI        │──────▶   PostgreSQL    │
-│   (Frontend)    │      │   (Backend API)  │      │   (Database)    │
+│   Port 3000     │      │   Port 8000      │      │   Port 5432     │
+│   (Frontend)    │      │   (Backend API)    │      │   (Database)    │
 └─────────────────┘      └──────────────────┘      └─────────────────┘
                                 │
+                                │ WebSocket
                                 ▼
                        ┌──────────────────┐
                        │   Celery Workers │
-                       │   (Redis)        │
+                       │   Redis Queue    │
+                       │   (Task Queue)   │
                        └──────────────────┘
 ```
 
@@ -138,9 +147,11 @@ src/api/
 ├── monitoring/          # Metrics & health
 │   ├── metrics.py
 │   └── health.py
-└── security/            # Security middleware
-    ├── cors.py
-    └── csrf.py
+├── security/            # Security middleware
+│   ├── cors.py
+│   └── csrf.py
+└── monitoring/          # Prometheus metrics
+    └── metrics.py
 ```
 
 ### Frontend Structure
@@ -149,22 +160,27 @@ src/api/
 frontend/src/
 ├── App.js               # Main app with routing
 ├── index.js             # Entry point
+├── styles.css           # Modern dark theme styles
 ├── api/
 │   └── client.js        # Axios API client
 ├── components/
 │   ├── Layout.js
-│   ├── ConfigForm.js    # Task creation form
-│   ├── TaskList.js
+│   ├── ConfigForm.js    # Task creation form (with cards)
+│   ├── TaskList.js      # Task list with status badges
+│   ├── Dashboard.js     # Stats dashboard
 │   ├── Navigation.js
 │   └── RealtimeMonitor.js
 ├── pages/
 │   ├── CreateTask.js
-│   └── TaskDetail.js
-└── hooks/
-    └── useWebSocket.js
+│   └── TaskDetail.js    # Live updates panel
+├── context/
+│   └── ToastContext.js  # Toast notifications
+├── hooks/
+│   └── useWebSocket.js
+└── styles.css           # Dark theme CSS variables
 ```
 
-## API Endpoints
+## 📡 API Endpoints
 
 ### Authentication
 - `POST /api/v1/token` - Obtain JWT access token
@@ -181,9 +197,9 @@ frontend/src/
 ### WebSocket
 - `WS /ws/tasks/{task_id}` - Real-time task updates
 
-## Configuration
+## ⚙️ Configuration
 
-Environment variables:
+### Environment Variables
 
 ```bash
 # Database
@@ -200,21 +216,42 @@ JWT_ALGORITHM=HS256
 FRONTEND_URL=http://localhost:3000
 ```
 
-## Deployment
-
-### Docker
+### Frontend Environment Variables
 
 ```bash
-# Build image
-docker build -t unsloth-optimiser .
+# API URL
+REACT_APP_API_URL=http://localhost:8000/api/v1
 
-# Run container
-docker run -p 8000:8000 \
-  -e REDIS_URL=redis://host.docker.internal:6379/0 \
-  unsloth-optimiser
+# WebSocket URL
+REACT_APP_WS_URL=ws://localhost:8000
 ```
 
-### Kubernetes
+## 🐳 Docker
+
+### Production Deployment
+
+```bash
+# Build all images
+docker-compose build
+
+# Start in production mode
+docker-compose up -d
+
+# Scale workers
+docker-compose up -d --scale worker=3
+```
+
+### Individual Services
+
+```bash
+# Build backend only
+docker build -t unsloth-optimiser-api .
+
+# Build frontend only
+cd frontend && docker build -t unsloth-optimiser-frontend .
+```
+
+## ☸️ Kubernetes
 
 ```bash
 # Apply manifests
@@ -223,9 +260,12 @@ kubectl apply -f k8s/
 # Check deployment
 kubectl get pods
 kubectl get svc
+
+# View logs
+kubectl logs -f deployment/unsloth-optimiser-api
 ```
 
-## Testing
+## 🧪 Testing
 
 ```bash
 # Run all tests
@@ -236,22 +276,36 @@ pytest --cov=src --cov-report=html
 
 # Run frontend tests
 cd frontend && npm test
+
+# Run specific test file
+pytest tests/test_api_integration.py -v
 ```
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 | Layer | Technology |
 |-------|------------|
-| Backend | Python 3.13, FastAPI, SQLAlchemy |
-| Task Queue | Celery, Redis |
-| Frontend | React 18, React Router, Axios |
-| Real-time | WebSocket |
-| Database | PostgreSQL (prod), SQLite (dev) |
-| Auth | JWT, bcrypt |
-| Monitoring | Prometheus |
-| Deployment | Docker, Kubernetes |
+| **Backend** | Python 3.13, FastAPI, SQLAlchemy |
+| **Task Queue** | Celery, Redis |
+| **Frontend** | React 18, React Router, Axios |
+| **Styling** | CSS Variables, Flexbox, Grid |
+| **Real-time** | WebSocket |
+| **Database** | PostgreSQL (prod), SQLite (dev) |
+| **Auth** | JWT, bcrypt |
+| **Monitoring** | Prometheus |
+| **Deployment** | Docker, Docker Compose, Kubernetes |
 
-## Contributing
+## 📦 Services (Docker Compose)
+
+| Service | Image | Port | Description |
+|---------|-------|------|-------------|
+| frontend | `unsloth-optimiser-frontend` | 3000 | React SPA with dark theme |
+| api | `unsloth-optimiser-api` | 8000 | FastAPI backend |
+| worker | `unsloth-optimiser-worker` | - | Celery task processor |
+| postgres | `postgres:15-alpine` | 5432 | PostgreSQL database |
+| redis | `redis:7-alpine` | 6379 | Redis message broker |
+
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -259,17 +313,22 @@ cd frontend && npm test
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
+## 📝 License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - [Unsloth](https://github.com/unsloth/unsloth) - The optimization library
 - [FastAPI](https://fastapi.tiangolo.com/) - Web framework
 - [Celery](https://docs.celeryq.dev/) - Distributed task queue
+- [React](https://reactjs.org/) - Frontend library
 
-## Support
+## 💬 Support
 
 For issues and questions:
 - GitHub Issues: https://github.com/taxicabno1729/unsloth-optimiser/issues
+
+## 🌟 Star History
+
+If you find this project useful, please consider giving it a star ⭐
