@@ -10,3 +10,4 @@ class Settings(BaseSettings):
     jwt_secret_key: str = "your-secret-key-change-in-production"
     jwt_algorithm: str = "HS256"
     api_v1_prefix: str = "/api/v1"
+    testing: bool = False
