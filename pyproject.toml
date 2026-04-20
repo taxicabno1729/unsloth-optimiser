@@ -33,7 +33,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src", "."]
-include = ["src*", "api*", "celery*", "db*", "models*", "schemas*", "services*", "tasks*", "utils*", "websocket*"]
+include = ["src*", "api*", "db*", "models*", "schemas*", "services*", "tasks*", "utils*", "websocket*"]
 exclude = ["tests*", "docs*"]
 
 [project.optional-dependencies]
