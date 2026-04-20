@@ -1,11 +1,13 @@
 """Unsloth Optimiser API - Main FastAPI application."""
 
 from datetime import datetime
-from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect, Request
 from src.api.routers import auth, tasks
 from src.api.config import Settings
 from src.api.tasks.celery import celery_app
 from src.api.tasks.orchestrator import TaskOrchestrator
+from src.api.monitoring.health import router as health_router
+from src.api.monitoring.metrics import MetricsMiddleware, get_metrics
 import json
 
 settings = Settings()
@@ -16,6 +18,9 @@ app = FastAPI(
     version="0.1.0"
 )
 
+# Add metrics middleware
+app.add_middleware(MetricsMiddleware)
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -24,13 +29,29 @@ async def startup_event():
     app.state.orchestrator = TaskOrchestrator()
 
 
-# Include auth router
+# Include routers
 app.include_router(auth.router, prefix=settings.api_v1_prefix, tags=["auth"])
 app.include_router(tasks.router, prefix=settings.api_v1_prefix, tags=["tasks"])
+app.include_router(health_router, prefix=settings.api_v1_prefix, tags=["health"])
 
 
+# Metrics endpoint (not under /api/v1/)
+@app.get("/metrics")
+async def metrics():
+    """Prometheus metrics endpoint."""
+    return get_metrics()
+
+
+# Simple health endpoint at root for backward compatibility
 @app.get("/health")
-async def health_check():
+async def root_health_check():
+    """Simple health check at root for backward compatibility."""
+    return {"status": "healthy"}
+
+
+@app.get("/")
+async def root():
+    """Root endpoint."""
     return {"status": "healthy"}
 
 
