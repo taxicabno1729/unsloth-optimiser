@@ -5,6 +5,7 @@ from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
 from src.api.routers import auth, tasks
 from src.api.config import Settings
 from src.api.tasks.celery import celery_app
+from src.api.tasks.orchestrator import TaskOrchestrator
 import json
 
 settings = Settings()
@@ -18,8 +19,9 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup_event():
-    """Startup event handler - add Celery to app state."""
+    """Startup event handler - add Celery and orchestrator to app state."""
     app.state.celery_app = celery_app
+    app.state.orchestrator = TaskOrchestrator()
 
 
 # Include auth router

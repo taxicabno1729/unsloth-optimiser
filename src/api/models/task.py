@@ -31,6 +31,7 @@ class Task(Base):
     parameters = Column(JSON, default=dict)
     result = Column(JSON, nullable=True)
     user_id = Column(String, nullable=True, index=True)
+    celery_task_id = Column(String, nullable=True, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     started_at = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
