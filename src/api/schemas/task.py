@@ -37,3 +37,4 @@ class Task(BaseModel):
     created_at: str
     started_at: Optional[str] = None
     completed_at: Optional[str] = None
+    celery_task_id: Optional[str] = None
