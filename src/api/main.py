@@ -8,6 +8,7 @@ from src.api.tasks.celery import celery_app
 from src.api.tasks.orchestrator import TaskOrchestrator
 from src.api.monitoring.health import router as health_router
 from src.api.monitoring.metrics import MetricsMiddleware, get_metrics
+from src.api.security.cors import setup_cors
 import json
 
 settings = Settings()
@@ -18,8 +19,24 @@ app = FastAPI(
     version="0.1.0"
 )
 
+# Setup CORS
+setup_cors(app)
+
 # Add metrics middleware
 app.add_middleware(MetricsMiddleware)
+
+
+# Security headers middleware
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    # Add security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
 
 
 @app.on_event("startup")
