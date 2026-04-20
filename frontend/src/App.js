@@ -1,20 +1,37 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import Navigation from './components/Navigation';
+import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
+import { ToastProvider } from './context/ToastContext';
+import Dashboard from './components/Dashboard';
 import CreateTask from './pages/CreateTask';
 import TaskDetail from './pages/TaskDetail';
-import Dashboard from './components/Dashboard';
+import './styles.css';
 
-// AppRoutes - used for testing with MemoryRouter
+// Header Component
+const Header = () => {
+  return (
+    <header className="header">
+      <div className="logo">
+        <div className="logo-icon">🦥</div>
+        <span className="logo-text">Unsloth Optimiser</span>
+      </div>
+      <nav className="nav">
+        <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end>
+          Dashboard
+        </NavLink>
+        <NavLink to="/create" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          New Task
+        </NavLink>
+      </nav>
+    </header>
+  );
+};
+
+// App Routes Component
 export const AppRoutes = () => {
   return (
-    <div className="App">
-      <header>
-        <h1>Unsloth Optimiser</h1>
-        <Navigation />
-      </header>
-      <main>
+    <div className="app">
+      <Header />
+      <main className="main">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/create" element={<CreateTask />} />
@@ -25,12 +42,14 @@ export const AppRoutes = () => {
   );
 };
 
-// App - production component with BrowserRouter
+// Main App Component
 function App() {
   return (
-    <Router>
-      <AppRoutes />
-    </Router>
+    <ToastProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </ToastProvider>
   );
 }
 
