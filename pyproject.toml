@@ -18,12 +18,19 @@ dependencies = [
     "uvicorn>=0.44.0",
     "websockets>=16.0",
     "tokenizers>=0.15.0",
-    "safetensors>=0.4.0"
+    "safetensors>=0.4.0",
+    "pydantic-settings>=2.0.0",
+    "sqlalchemy>=2.0.0"
 ]
 
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src", "."]
+include = ["src*", "api*", "celery*", "db*", "models*", "schemas*", "services*", "tasks*", "utils*", "websocket*"]
+exclude = ["tests*", "docs*"]
 
 [project.optional-dependencies]
 optimization = [
@@ -50,6 +57,7 @@ unsloth-optimiser = "main:app"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+pythonpath = [".", "src"]
 
 [tool.black]
 line-length = 100
